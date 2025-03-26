@@ -11,6 +11,7 @@ const fetchData = async(searchTerm) =>{
     return[]
  }
     console.log(response.data.Search)
+    console.log(response.data.Search)
 
 }
 //fetchData()
