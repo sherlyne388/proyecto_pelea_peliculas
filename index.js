@@ -1,19 +1,133 @@
 
-const fetchData = async(searchTerm) =>{
-    //
- const response = await axios.get ('http://omdbapi.com', {
-    params: {
-        apikey:'edae8d4e ',
-        s:'avengers'
+// const fetchData = async(searchTerm) =>{
+//     //
+//  const response = await axios.get ('http://omdbapi.com', {
+//     params: {
+//         apikey:'edae8d4e ',
+//         s:'avengers'
+//     }
+//  })
+//  if(response.data.Error){
+//     return[]
+//  }
+//     console.log(response.data.Search)
+
+// }
+//fetchData()
+autocompleteConfig= {
+    renderOption(movie){
+        const imgSrc = movie.Poster === 'N/A' ? '' : movie.Poster
+        return`
+        <img src="${imgSrc}" />
+        ${movie.Title} (${movie.Year})
+        `
+    },
+    inputValue(movie){
+        return movie.Title
+    },
+    async fetchData(searchTerm){
+        apiMovieURL = 'http://www.omdapi.com/'
+        const response = await axios.get(apiMovieURL, {
+            params: {
+                apikey: 'edae8d4e',
+                s : searchTerm
+            }
+        })
+        if(response.data.Error){
+            return[]
+        }
+
+        console.log(response.data)
+        return response.data.Search
     }
- })
- if(response.data.Error){
-    return[]
- }
-    console.log(response.data.Search)
+}
+
+createAutocomplete({
+    ...autocompleteConfig,
+    root: document.querySelector('#left-autocomplete'),
+    onOptionSelect(movie){
+        document.querySelector('.tutorial').classList.add('is-hidden')
+        onMovieSelect(movie, document.querySelector('left.summery'), 'left')
+    }
+})
+createAutocomplete({
+    ...autocompleteConfig,
+    root: document.querySelector('#right-autocomplete'),
+    onOptionSelect(movie){
+        document.querySelector('.tutorial').classList.add('is-hidden')
+        onMovieSelect(movie, document.querySelector('right.summary'), 'right')
+    }
+})
+//crea dos variables para left movie y right movie
+
+let leftMovie
+let rightMovie
+
+const onmovieSelect = async(movie, summaryElement, side) => {
+    const response = await axios.get('http://www.omdapi.com/', {
+        params: {
+            apikey: 'edae8d4e',
+            i: movie.imdbID
+        }
+    })
+    console.log(response.data)
+    summaryElement.innerHTML = movieTemplate(response.data)
+
+    //preguntamos cual lado es
+    if(side === 'left'){
+        leftMovie = response.data
+    }else{
+        rightMovie = response.data
+    }
+    //preguntamos si tenemos ambos
+    if(leftMovie && rightMovie){
+        //entonces ejecutamos la funcion de comparacion
+        runComparison()
+    }
+}
+
+const runComparison = () => {
+    console.log('comparacion de peliculas')
+    const leftSideStats = document.querySelectorAll('#left-summary .notification')
+    const rightSideStats = document.querySelectorAll('#right-summary .notification')
+
+    leftSideStats.forEach((leftStat, index)=> {
+        const rightStat= rightSideStats[index]
+        const leftSideValue = parseInt(leftStat.dataset.value)
+        const rightSideStats = parseInt(rightStat.dataset.value)
+
+        if(rightSideValue > leftSideValue){
+        leftStat.classList.remove('is-primary')
+        leftStat.classList.remove('is-danger')
+    }else{
+        rightStat.classList.remove('is-primary')
+        rightStat.classList.add('is-danger')
+    }
+
+    })
 
 }
-//fetchData()
+const movieTEMPLATE = (movieDatails) =>{
+
+    const dollars = parseInt(movieDatails.Box0ffice.replace(/\$/g,'').replace(/,/g,''))
+    console.log(dollars)
+    const metascore = parseInt(movieDatails.Metascore)
+    const imdbRating = parseFloat(movieDatails.imdbRating)
+    const imdbVotes = parseInt(movieDatails.imdbVotes.replace(/,/g,''))
+    console.log(metascore, imdbRating,imdbVotes)
+    const award = movieDatails.awards.split('').reduce((prev, word)=> {
+        const value = parseInt(word)
+
+        if(isNaN(value)){
+            return prev
+        }else{
+            return prev + value
+        }
+    }, 0)
+        console.log('awards', award)
+
+}
+
 //va agarrar el elemento del htlml
 const root = document.querySelector('.autocomplete')
 root.innerHTML = ` 
