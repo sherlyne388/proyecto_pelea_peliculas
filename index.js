@@ -124,7 +124,47 @@ const movieTEMPLATE = (movieDatails) =>{
             return prev + value
         }
     }, 0)
-        console.log('awards', award)
+        console.log('Awards', awards)
+
+        //agregar la propiedad data-value a cada elemento del template
+
+        return `
+        <article class="media">
+            <figure class="media-left">
+                <p class="image">
+                    <image src="${movieDetails.Poster}"/>
+                </p>
+            </figure>
+            <div xlass="media-content">
+                <div class="content>
+                    <h1>${movieDetails.Title}</h1>
+                    <h4>${movieDetails.Genre}</h4>
+                    <p>${movieDetails.Plot}</p>
+                </div>
+            </div>
+        </article>
+        <article data-value="${awards} class="notification is-primary">
+            <p class="title">${movieDetails.Awards}</p>
+            <p class="subtitle">Awards</p>
+        </article>
+        <article data-value="${dollars} class="notification is-primary">
+            <p class="title">${movieDetails.BoxOffice}</p>
+            <p class="subtitle">BoxOffice</p>
+        </article>
+        <article data-value="${metascore} class="notification is-primary">
+            <p class="title">${movieDetails.Metascore}</p>
+            <p class="subtitle">Metascore</p>
+        </article>
+        <article data-value="${imdbRating} class="notification is-primary">
+            <p class="title">${movieDetails.imdbRating}</p>
+            <p class="subtitle">IMBD Rating</p>
+        </article>
+        <article data-value="${imdbVotes} class="notification is-primary">
+            <p class="title">${movieDetails.imdbVotes}</p>
+            <p class="subtitle">IMBD Votes</p>
+        </article>
+
+        `
 
 }
 
